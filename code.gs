@@ -44,10 +44,7 @@ function setProductData(spreadsheet, asinList, headerList) {
   // get data from keepa api by asin & domain
   for (var i = 0; i < asinList.length; i++) {
     var response = UrlFetchApp.fetch(keepaUrl + asinList[i]).getContentText();
-
     var data = JSON.parse(response);
-
-//    Logger.log(data.products[0])
     productList.push(data.products[0]);
   }
 
@@ -55,7 +52,11 @@ function setProductData(spreadsheet, asinList, headerList) {
   for (var i = 0; i < productList.length; i++) {
     for (var j = 0; j < headerList.length; j++) {
       var letter = columnToLetter(j + 1);
-      activeSheet.getRange(letter + (i + 2)).setValue(productList[i][headerList[j]]);
+      var value = productList[i][headerList[j]];
+      if (value && headerList[j] == 'fbaFees') {
+        value = value.pickAndPackFee;
+      }
+      activeSheet.getRange(letter + (i + 2)).setValue(value);
     }
   }
 }
